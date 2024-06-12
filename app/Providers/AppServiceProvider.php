@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // $this->app->bind(\Faker\Generator::class . ':' . config('app.faker_locale'), \Faker\Generator::class);
+        $this->app->bind(\Faker\Generator::class . ':' . config('app.faker_locale'), \Faker\Generator::class);
     }
 
     /**
