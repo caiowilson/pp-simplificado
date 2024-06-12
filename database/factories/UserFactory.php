@@ -5,6 +5,8 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Faker\Provider\pt_BR\Person as BRPerson;
+use Faker\Provider\pt_BR\Company as BRCompany;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -23,7 +25,17 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        fake()->addProvider(new BRPerson(fake()));
+        fake()->addProvider(new BRCompany(fake()));
+
+        $document = [
+            'cpf' => fake()->cpf(false),
+            'cnpj' => fake()->cnpj(false),
+        ];
+
         return [
+            'document' => fake()->randomElement($document),
+            'balance' => fake()->randomFloat(2, 0, 1000),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
