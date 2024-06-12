@@ -34,9 +34,9 @@ class UserFactory extends Factory
         ];
 
         return [
+            'name' => fake()->name(),
             'document' => fake()->randomElement($document),
             'balance' => fake()->randomFloat(2, 0, 1000),
-            'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
@@ -44,6 +44,18 @@ class UserFactory extends Factory
         ];
     }
 
+    public function userRole(): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user) {
+            $user->assignRole('user');
+        });
+    }
+    public function sellerRole(): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user) {
+            $user->assignRole('seller');
+        });
+    }
     /**
      * Indicate that the model's email address should be unverified.
      */
