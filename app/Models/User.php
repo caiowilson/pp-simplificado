@@ -3,13 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +22,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'document',
+        'balance',
+    ];
+
+    protected $appends = [
+        'is_seller',
     ];
 
     /**
@@ -42,6 +50,42 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'balance' => 'decimal:2',
         ];
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->roles->contains('name', $role);
+    }
+
+    public function assignRole(string $role): void
+    {
+        $this->roles()->attach(Role::where('name', $role)->first());
+    }
+
+    public function removeRole(string $role): void
+    {
+        $this->roles()->detach(Role::where('name', $role)->first());
+    }
+
+    public function transactions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Transaction::class, 'payer');
+    }
+
+    public function transactionsReceived(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Transaction::class, 'payee');
+    }
+
+    public function getIsSellerAttribute(): bool
+    {
+        return $this->hasRole('seller');
     }
 }
