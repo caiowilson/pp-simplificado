@@ -61,7 +61,7 @@ class StoreUserRequest extends FormRequest
 
     public function passedValidation()
     {
-        if (count($this->document) > 11) {
+        if (strlen($this->document) > 11) {
             $this->replace(['is_seller' => true]);
         }
         $this->merge([
