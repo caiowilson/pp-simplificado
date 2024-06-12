@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::resource('users', UserController::class)
-        ->only(['index', 'show', 'update', 'destroy']);
+        ->only(['index', 'show', 'update', 'destroy', 'store']);
     Route::post('/transfer', [TransactionController::class, 'store']);
     Route::resource('transactions', TransactionController::class)
         ->only(['index', 'store', 'show']);
